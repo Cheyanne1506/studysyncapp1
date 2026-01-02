@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StudySync – Modules</title>
+<link rel="stylesheet" href="themes.css">
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+}
+
+/* APP LAYOUT */
+.app {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+  background: var(--sidebar-bg);
+  padding: 20px;
+}
+
+.sidebar h2 { margin-bottom: 20px; }
+
+.sidebar a {
+  display: block;
+  padding: 12px;
+  margin-bottom: 8px;
+  background: var(--sidebar-item);
+  border-radius: 8px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.sidebar a.active,
+.sidebar a:hover {
+  background: var(--sidebar-hover);
+}
+
+/* MAIN */
+.main {
+  padding: 24px;
+}
+
+.card {
+  background: var(--card-bg);
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+input, select, button {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  border: none;
+}
+
+button {
+  background: var(--sidebar-hover);
+  color: white;
+  cursor: pointer;
+}
+
+button.danger {
+  background: #b91c1c;
+}
+
+/* TABS */
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tab-btn {
+  padding: 10px 20px;
+  border-radius: 10px;
+  background: var(--sidebar-item);
+  cursor: pointer;
+}
+
+.tab-btn.active {
+  background: var(--sidebar-hover);
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+  }
+
+  .sidebar h2 {
+    display: none;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+
+<body class="theme-redblack">
+
+<div class="app">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <a href="home.html">Dashboard</a>
+  <a href="module.html" class="active">Modules</a>
+  <a href="planner.html">Planner</a>
+  <a href="study.html">Study Mode</a>
+  <a href="progress.html">Progress</a>
+  <a href="settings.html">Settings</a>
+
+  <h3>Your Modules</h3>
+  <div id="sidebarModules"></div>
+
+  <h3>Assessments</h3>
+  <div id="sidebarAssessments"></div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<h1>📚 Modules</h1>
+
+<div class="tabs">
+  <div class="tab-btn active" data-tab="overview">Overview</div>
+  <div class="tab-btn" data-tab="topics">Study Topics</div>
+  <div class="tab-btn" data-tab="details">Module Details</div>
+</div>
+
+
+<!-- OVERVIEW -->
+<div id="overview" class="tab-content">
+
+<div class="grid">
+
+<div class="card">
+<h3>Add Module</h3>
+<input id="modName" placeholder="Module Name">
+<input id="modCode" placeholder="Module Code">
+<input id="modTarget" type="number" placeholder="Target %">
+<button onclick="addModule()">Add Module</button>
+</div>
+ 
+<div class="card">
+  <h3>Delete Module Data</h3>
+
+  <select id="deleteModuleSelect">
+    <option value="">Select module</option>
+  </select>
+
+  <button class="danger" onclick="deleteModuleData()">
+    Delete Selected Module
+  </button>
+</div>
+
+
+<div class="card">
+<h3>Add Assessment</h3>
+<select id="assModule"></select>
+<<input
+  id="assType"
+  type="text"
+  placeholder="Assessment name (ICE Task, Assignment 1, POE, Exam)"
+/>
+
+<input id="assWeight" type="number" placeholder="Weight %">
+<input id="assDate" type="date">
+<button onclick="addAssessment()">Add Assessment</button>
+</div>
+
+</div>
+</div>
+<!-- DETAILS -->
+ <!-- MODULE DETAILS TAB -->
+<div id="details" class="tab-content" style="display:none;">
+  <div class="card">
+    <h3>Module Details</h3>
+    <div id="moduleDetailsContent">
+<select id="moduleDetailsSelect" onchange="showModuleDetailsFromDropdown()">
+  <option value="">Select a module</option>
+</select>
+<div id="moduleDetailsView"></div>
+   
+    </div>
+  </div>
+</div>
+
+<!-- TOPICS -->
+<div id="topics" class="tab-content" style="display:none;">
+
+  <!-- SELECT MODULE -->
+  <div class="card">
+    <h3>📘 Select Module</h3>
+
+    <select id="topicModule" onchange="loadAssessmentButtonsForModule(this.value)">
+      <option value="">Choose module</option>
+    </select>
+  </div>
+
+  <!-- ADD TOPIC -->
+  <div class="card">
+    <h3>✏️ Add Study Topic</h3>
+
+    <input id="topicTitle" placeholder="Topic name (e.g. Arrays, UML, SQL Joins)">
+
+    <p style="margin:8px 0;"><strong>This topic helps with:</strong></p>
+
+    <div id="assessmentButtons" style="display:flex; gap:10px; flex-wrap:wrap;">
+      <select id="topicAssessments" multiple style="height:120px;">
+        <option value="">Select assessments from chosen module</option>
+</select>
+
+     
+    </div>
+
+    <button style="margin-top:12px;" onclick="addTopic()">➕ Add Topic</button>
+  </div>
+
+  <div class="card">
+  <h3>📚 Study Topics</h3>
+
+  <button onclick="showStudyTopics()">📖 View Study Topics</button>
+
+  <div id="topicsList"></div>
+</div>
+
+
+
+
+
+</div>
+</div>
+<!-- DETAILS -->
+ <!-- MODULE DETAILS TAB -->
+<div id="details" class="tab-content" style="display:none;">
+  <div class="card">
+    <h3>Module Details</h3>
+    <div id="moduleDetailsContent">
+<select id="moduleDetailsSelect" onchange="showModuleDetailsFromDropdown()">
+  <option value="">Select a module</option>
+</select>
+<div id="moduleDetailsView"></div>
+   
+    </div>
+  </div>
+</div>
+
+
+
+
+<script>
+/* =========================
+   STORAGE
+========================= */
+let modules = JSON.parse(localStorage.getItem('modules') || '[]');
+let assessments = JSON.parse(localStorage.getItem('assessments') || '[]');
+let topics = JSON.parse(localStorage.getItem('topics') || '[]');
+let selectedTopicAssessments = [];
+
+
+/* =========================
+   ELEMENTS
+========================= */
+const sidebarModules = document.getElementById('sidebarModules');
+const sidebarAssessments = document.getElementById('sidebarAssessments');
+const moduleDetailsSelect = document.getElementById('moduleDetailsSelect');
+const assModule = document.getElementById('assModule');
+const topicModule = document.getElementById('topicModule');
+const topicsList = document.getElementById('topicsList');
+const deleteModuleSelect = document.getElementById('deleteModuleSelect');
+
+
+/* =========================
+   TABS
+========================= */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+    document.getElementById(btn.dataset.tab).style.display = 'block';
+  };
+});
+
+/* =========================
+   MODULES
+========================= */
+function addModule() {
+  const name = modName.value.trim();
+  const code = modCode.value.trim();
+  const target = Number(modTarget.value);
+
+  if (!name || !code || !target) {
+    alert('Fill all fields');
+    return;
+  }
+
+  modules.push({ name, code, target });
+  localStorage.setItem('modules', JSON.stringify(modules));
+
+  modName.value = modCode.value = modTarget.value = '';
+  render();
+}
+
+function addAssessment() {
+  const type = assType.value.trim();
+  const moduleCode = assModule.value;
+  const weight = Number(assWeight.value);
+  const date = assDate.value;
+
+  if (!moduleCode || !type || !weight) {
+    alert('Please fill in module, assessment name, and weight');
+    return;
+  }
+
+  assessments.push({
+    moduleCode,
+    type,
+    weight,
+    date,
+    mark: null,
+    locked: false
+  });
+
+  localStorage.setItem('assessments', JSON.stringify(assessments));
+
+  assType.value = '';
+  assWeight.value = '';
+  assDate.value = '';
+
+  render();
+}
+
+
+/* =========================
+   CALCULATIONS
+========================= */
+function calculateContribution(mark, weight) {
+  return ((mark / 100) * weight).toFixed(2);
+}
+
+function calculateModuleProgress(moduleCode) {
+  const moduleAssessments = assessments.filter(a => a.moduleCode === moduleCode);
+
+  let total = 0;
+  let completedWeight = 0;
+
+  moduleAssessments.forEach(a => {
+    if (a.mark !== null) {
+      total += (a.mark / 100) * a.weight;
+      completedWeight += a.weight;
+    }
+  });
+
+  return {
+    achieved: total.toFixed(2),
+    remaining: (100 - completedWeight).toFixed(2)
+  };
+}
+
+/* =========================
+   SAVE & LOCK MARK
+========================= */
+function saveMark(moduleCode, index, value) {
+  value = Number(value);
+  if (isNaN(value) || value < 0 || value > 100) {
+    alert('Enter a valid percentage');
+    return;
+  }
+
+  const moduleAssessments = assessments.filter(a => a.moduleCode === moduleCode);
+  moduleAssessments[index].mark = value;
+  moduleAssessments[index].locked = true;
+
+  localStorage.setItem('assessments', JSON.stringify(assessments));
+  showModuleDetailsFromDropdown();
+}
+
+/* =========================
+   MODULE DETAILS VIEW
+========================= */
+function showModuleDetailsFromDropdown() {
+  const code = moduleDetailsSelect.value;
+  const container = document.getElementById('moduleDetailsView');
+
+  if (!code) {
+    container.innerHTML = '<p style="opacity:0.7;">Select a module to view details</p>';
+    return;
+  }
+
+  const module = modules.find(m => m.code === code);
+  const moduleAssessments = assessments.filter(a => a.moduleCode === code);
+  const progress = calculateModuleProgress(code);
+
+  let html = `
+    <h3>${module.name} (${module.code})</h3>
+    <p><strong>Target:</strong> ${module.target}%</p>
+
+    <p>
+      <strong>Current Total:</strong> ${progress.achieved}%<br>
+      <strong>Remaining Weight:</strong> ${progress.remaining}%
+    </p>
+  `;
+
+  if (Number(progress.achieved) >= module.target) {
+    html += `<p style="color:lightgreen;"><strong>✅ Target achieved</strong></p>`;
+  } else {
+    const needed = (module.target - progress.achieved).toFixed(2);
+    html += `<p style="color:#facc15;"><strong>⚠ You still need ${needed}%</strong></p>`;
+  }
+
+  html += `<hr><h4>Assessments</h4>`;
+
+  moduleAssessments.forEach((a, i) => {
+    const contribution = a.mark !== null
+      ? calculateContribution(a.mark, a.weight)
+      : ((module.target / 100) * a.weight).toFixed(2);
+
+    html += `
+      <div class="card">
+        <strong>${a.type}</strong><br>
+        Weight: ${a.weight}%<br>
+        Due: ${a.date || 'N/A'}<br><br>
+
+        ${
+          a.locked
+            ? `<strong>Mark:</strong> ${a.mark}%<br>
+               <strong>Contribution:</strong> ${contribution}%`
+            : `
+              <small>Needed contribution: ${contribution}%</small>
+              <input type="number"
+                     placeholder="Enter mark %"
+                     onchange="saveMark('${code}', ${i}, this.value)">
+            `
+        }
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
+/* =========================
+   DELETE MODULE
+========================= */
+function deleteModuleData() {
+  const code = deleteModuleSelect.value;
+  if (!code) return alert('Select a module');
+
+  if (!confirm('Delete module and all related data?')) return;
+
+  modules = modules.filter(m => m.code !== code);
+  assessments = assessments.filter(a => a.moduleCode !== code);
+  topics = topics.filter(t => t.module !== code);
+
+  localStorage.setItem('modules', JSON.stringify(modules));
+  localStorage.setItem('assessments', JSON.stringify(assessments));
+  localStorage.setItem('topics', JSON.stringify(topics));
+
+  render();
+}
+
+/* =========================
+   RENDER
+========================= */
+function render() {
+  sidebarModules.innerHTML = '';
+  sidebarAssessments.innerHTML = '';
+  assModule.innerHTML = '';
+  topicModule.innerHTML = '<option value="">Choose module</option>'; // ✅ FIX
+  deleteModuleSelect.innerHTML = '<option value="">Select module</option>';
+  moduleDetailsSelect.innerHTML = '<option value="">Select a module</option>';
+
+  /* =========================
+     MODULES
+  ========================== */
+  modules.forEach(m => {
+    sidebarModules.innerHTML += `
+      <div class="card">
+        <strong>${m.name} (${m.code})</strong><br>
+        Target: ${m.target}%
+      </div>
+    `;
+
+    assModule.innerHTML += `
+      <option value="${m.code}">
+        ${m.name} (${m.code})
+      </option>
+    `;
+
+    topicModule.innerHTML += `
+      <option value="${m.code}">
+        ${m.name} (${m.code})
+      </option>
+    `;
+
+    deleteModuleSelect.innerHTML += `
+      <option value="${m.code}">
+        ${m.name}
+      </option>
+    `;
+
+    moduleDetailsSelect.innerHTML += `
+      <option value="${m.code}">
+        ${m.name}
+      </option>
+    `;
+  });
+
+  /* =========================
+     SIDEBAR ASSESSMENTS
+  ========================== */
+  sidebarAssessments.innerHTML = '';
+
+  if (assessments.length === 0) {
+    sidebarAssessments.innerHTML = `<p style="opacity:0.7;">No assessments yet</p>`;
+  } else {
+    modules.forEach(m => {
+      const moduleAssessments = assessments.filter(
+        a => a.moduleCode === m.code
+      );
+
+      if (moduleAssessments.length > 0) {
+        sidebarAssessments.innerHTML += `
+          <div class="card">
+            <strong>${m.name} (${m.code})</strong>
+            ${moduleAssessments.map(a => `
+              <div>${a.type} – ${a.weight}%</div>
+            `).join('')}
+          </div>
+        `;
+      }
+    });
+  }
+
+  /* =========================
+     TOPICS LIST
+  ========================== */
+  topicsList.innerHTML = '';
+
+  const selectedModule = topicModule.value;
+  const moduleTopics = topics.filter(t => t.module === selectedModule);
+
+  if (!selectedModule) {
+    topicsList.innerHTML = `<p style="opacity:0.7;">Select a module to view topics</p>`;
+    return;
+  }
+
+  if (moduleTopics.length === 0) {
+    topicsList.innerHTML = `<p style="opacity:0.7;">No topics for this module</p>`;
+  } else {
+    moduleTopics.forEach(t => {
+      topicsList.innerHTML += `
+        <div class="card">
+          <strong>${t.title}</strong><br>
+          Helps with ${t.assessments.length} assessment(s)
+        </div>
+      `;
+    });
+  }
+}
+
+ 
+  
+
+ 
+
+  
+
+
+
+
+document.addEventListener('DOMContentLoaded', render);
+function loadAssessmentButtonsForModule(moduleCode) {
+  const container = document.getElementById('assessmentButtons');
+  container.innerHTML = '';
+  selectedTopicAssessments = [];
+
+  if (!moduleCode) {
+    container.innerHTML = '<p style="opacity:0.7;">Select a module to load assessments</p>';
+    return;
+  }
+
+  const moduleAssessments = assessments.filter(
+    a => a.moduleCode === moduleCode
+  );
+
+  if (moduleAssessments.length === 0) {
+    container.innerHTML = '<p style="opacity:0.7;">No assessments for this module</p>';
+    return;
+  }
+
+  moduleAssessments.forEach((a, index) => {
+    const btn = document.createElement('button');
+    btn.textContent = `${a.type} (${a.weight}%)`;
+    btn.style.background = 'var(--sidebar-item)';
+    btn.style.borderRadius = '8px';
+
+    btn.onclick = () => {
+      if (selectedTopicAssessments.includes(index)) {
+        selectedTopicAssessments = selectedTopicAssessments.filter(i => i !== index);
+        btn.style.background = 'var(--sidebar-item)';
+      } else {
+        selectedTopicAssessments.push(index);
+        btn.style.background = 'var(--sidebar-hover)';
+      }
+    };
+
+    container.appendChild(btn);
+  });
+}
+
+function toggleAssess(type) {
+  if (selectedAssessments.includes(type)) {
+    selectedAssessments = selectedAssessments.filter(t => t !== type);
+  } else {
+    selectedAssessments.push(type);
+  }
+}
+function addTopic() {
+  const moduleCode = topicModule.value;
+  const title = topicTitle.value.trim();
+
+  if (!moduleCode || !title) {
+    alert('Please select a module and enter a topic name');
+    return;
+  }
+
+  if (selectedTopicAssessments.length === 0) {
+    alert('Select at least one assessment this topic helps with');
+    return;
+  }
+
+  topics.push({
+    module: moduleCode,
+    title,
+    assessments: [...selectedTopicAssessments]
+  });
+
+  localStorage.setItem('topics', JSON.stringify(topics));
+
+  topicTitle.value = '';
+  selectedTopicAssessments = [];
+  loadAssessmentButtonsForModule(moduleCode);
+  render();
+}
+function addTopic() {
+  const moduleCode = topicModule.value;
+  const title = topicTitle.value.trim();
+
+  if (!moduleCode) {
+    alert('Please select a module');
+    return;
+  }
+
+  if (!title) {
+    alert('Please enter a study topic');
+    return;
+  }
+
+  if (selectedTopicAssessments.length === 0) {
+    alert('Select at least one assessment this topic helps with');
+    return;
+  }
+
+  topics.push({
+    module: moduleCode,
+    title: title,
+    assessments: [...selectedTopicAssessments]
+  });
+
+  localStorage.setItem('topics', JSON.stringify(topics));
+
+  // reset UI
+  topicTitle.value = '';
+  selectedTopicAssessments = [];
+
+  // reload buttons & topics
+  loadAssessmentButtonsForModule(moduleCode);
+  render();
+}
+function showStudyTopics() {
+  const container = document.getElementById('topicsList');
+  container.innerHTML = '';
+
+  if (topics.length === 0) {
+    container.innerHTML = '<p style="opacity:0.7;">No study topics added yet</p>';
+    return;
+  }
+
+  modules.forEach(m => {
+    const moduleTopics = topics.filter(t => t.module === m.code);
+
+    if (moduleTopics.length === 0) return;
+
+    container.innerHTML += `
+      <div class="card">
+        <h4>${m.name} (${m.code})</h4>
+
+        ${moduleTopics.map(t => `
+          <div style="margin-top:10px; padding-left:10px;">
+            <strong>• ${t.title}</strong><br>
+            <small>
+              Helps with:
+              ${t.assessments.map(i => {
+                const a = assessments.filter(x => x.moduleCode === m.code)[i];
+                return a ? `${a.type} (${a.weight}%)` : '';
+              }).join(', ')}
+            </small>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  });
+}
+(function applyPreferences() {
+    const theme = localStorage.getItem('theme') || 'theme-redblack';
+    const font = localStorage.getItem('font') || 'Arial, sans-serif';
+
+    document.body.className = theme;
+    document.body.style.fontFamily = font;
+  })();
+
+
+</script>
+
+
+</body>
+</html>

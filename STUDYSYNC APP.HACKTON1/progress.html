@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudySync AI – Progress</title>
+  <link rel="stylesheet" href="themes.css" />
+
+  <style>
+    * { box-sizing:border-box; font-family:Arial, sans-serif; }
+    body { margin:0; background:var(--bg); color:var(--text); }
+
+    .app {
+      display:grid;
+      grid-template-columns:240px 1fr;
+      min-height:100vh;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+  width:240px;
+  background:var(--sidebar-bg);
+  padding:20px;
+}
+
+.sidebar h2 { margin-bottom:20px; }
+
+.sidebar ul { list-style:none; }
+
+.nav-link {
+  display:block;
+  padding:12px;
+  border-radius:8px;
+  margin-bottom:8px;
+  text-decoration:none;
+  background:var(--sidebar-item);
+  color:var(--text);
+}
+
+.nav-link:hover { background:var(--sidebar-hover); }
+
+.nav-link.active {
+  background:var(--sidebar-hover);
+  box-shadow:0 0 10px rgba(255,0,0,0.4);
+}
+
+    
+
+    /* MAIN */
+    .main { padding:24px; }
+
+    .header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:24px;
+    }
+
+    .header h1 { font-size:26px; }
+
+    .theme-selector {
+      padding:8px;
+      border-radius:8px;
+    }
+
+    .grid {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:20px;
+    }
+
+    .card {
+      background:var(--card-bg);
+      border-radius:16px;
+      padding:20px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.25);
+      margin-bottom:20px;
+    }
+
+    .stat {
+      display:flex;
+      justify-content:space-between;
+      margin-bottom:10px;
+    }
+
+    .bar {
+      height:12px;
+      border-radius:6px;
+      background:rgba(255,255,255,0.15);
+      overflow:hidden;
+    }
+
+    .bar-fill {
+      height:100%;
+      background:var(--sidebar-hover);
+      width:0%;
+    }
+
+    .session {
+      padding:10px;
+      border-radius:10px;
+      background:rgba(255,255,255,0.05);
+      margin-bottom:8px;
+    }
+/* responsive rules moved to themes.css */
+
+  /* small improvements for mobile bars and fills */
+  .bar { width: 100%; }
+  .bar-fill { transition: width 500ms ease; }
+
+  </style>
+</head>
+
+<body class="theme-redblack">
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h2>StudySync</h2>
+    <ul>
+      <li><a class="nav-link" href="home.html">Dashboard</a></li>
+      <li><a class="nav-link" href="module.html">Modules</a></li>
+      <li><a class="nav-link" href="planner.html">Planner</a></li>
+      <li><a class="nav-link" href="study.html">Study Mode</a></li>
+      <li><a class="nav-link active" href="progress.html">Progress & Goals</a></li>
+      <li><a class="nav-link" href="settings.html">Settings</a></li>
+    </ul>
+  </div>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div class="header">
+      <h1>📊 Progress & Goals</h1>
+    </div>
+
+    <div class="grid">
+
+      <!-- OVERALL STATS -->
+      <div class="card">
+        <h3>📈 Overall Progress</h3>
+
+        <div class="stat"><span>Weekly Study Goal</span><span>8 / 12 hrs</span></div>
+        <div class="bar"><div class="bar-fill" style="width:65%"></div></div>
+
+        <div class="stat" style="margin-top:12px;"><span>Assignments Completed</span><span>5 / 7</span></div>
+        <div class="bar"><div class="bar-fill" style="width:72%"></div></div>
+
+        <div class="stat" style="margin-top:12px;"><span>Focus Sessions</span><span>14</span></div>
+      </div>
+
+      <!-- MODULE PROGRESS -->
+      <div class="card">
+        <h3>📘 Module Progress</h3>
+
+        <div class="session">
+          Programming – 70%
+          <div class="bar"><div class="bar-fill" style="width:70%"></div></div>
+        </div>
+
+        <div class="session">
+          Mathematics – 55%
+          <div class="bar"><div class="bar-fill" style="width:55%"></div></div>
+        </div>
+
+        <div class="session">
+          Web Development – 80%
+          <div class="bar"><div class="bar-fill" style="width:80%"></div></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- GOALS -->
+    <div class="card">
+      <h3>🎯 Current Goals</h3>
+
+      <div class="session">✔ Study at least 2 hours daily</div>
+      <div class="session">✔ Finish Programming assignment</div>
+      <div class="session">⏳ Improve Maths test score to 65%</div>
+      <div class="session">⏳ Complete all weekly planner tasks</div>
+    </div>
+
+    <!-- STUDY HISTORY -->
+    <div class="card">
+      <h3>🕒 Recent Study Sessions</h3>
+
+      <div class="session">📚 Programming – Arrays (45 min)</div>
+      <div class="session">📐 Maths – Functions (30 min)</div>
+      <div class="session">🌐 Web Dev – CSS Layouts (60 min)</div>
+    </div>
+
+  </main>
+
+</div>
+
+<script>
+  function changeTheme(theme) {
+    document.body.className = theme;
+  }
+ 
+  (function applyPreferences() {
+    const theme = localStorage.getItem('theme') || 'theme-redblack';
+    const font = localStorage.getItem('font') || 'Arial, sans-serif';
+
+    document.body.className = theme;
+    document.body.style.fontFamily = font;
+  })();
+
+
+</script>
+
+<script>
+  // Highlight active nav (works with .nav-link and legacy .nav-item)
+  (function () {
+    const current = window.location.pathname.split('/').pop();
+    document.querySelectorAll('.nav-link, .nav-item').forEach(link => {
+      const target = (link.getAttribute('href') || link.dataset.page || '').split('/').pop();
+      link.classList.toggle('active', target === current);
+    });
+  })();
+</script>
+
+</body>
+</html>

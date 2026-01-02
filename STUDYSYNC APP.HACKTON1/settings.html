@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudySync – Settings</title>
+  <link rel="stylesheet" href="themes.css" />
+  <style>
+    * { box-sizing:border-box; font-family: inherit; }
+    body { margin:0; background:var(--bg); color:var(--text); }
+
+    .app {
+      display:grid;
+      grid-template-columns:240px 1fr;
+      min-height:100vh;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+  width:240px;
+  background:var(--sidebar-bg);
+  padding:20px;
+}
+
+.sidebar h2 { margin-bottom:20px; }
+
+.sidebar ul { list-style:none; }
+
+.nav-link {
+  display:block;
+  padding:12px;
+  border-radius:8px;
+  margin-bottom:8px;
+  text-decoration:none;
+  background:var(--sidebar-item);
+  color:var(--text);
+}
+
+.nav-link:hover { background:var(--sidebar-hover); }
+
+.nav-link.active {
+  background:var(--sidebar-hover);
+  box-shadow:0 0 10px rgba(255,0,0,0.4);
+}
+
+    /* MAIN */
+    .main { padding:24px; }
+
+    .page-title {
+      font-size:26px;
+      margin-bottom:20px;
+    }
+
+    .card {
+      background:var(--card-bg);
+      border-radius:16px;
+      padding:20px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.25);
+      margin-bottom:20px;
+    }
+
+    label {
+      font-size:14px;
+      margin-top:12px;
+      display:block;
+    }
+
+    input, select {
+      width:100%;
+      padding:10px;
+      margin-top:6px;
+      border-radius:10px;
+      border:none;
+    }
+
+    button {
+      margin-top:16px;
+      padding:10px 16px;
+      border-radius:10px;
+      border:none;
+      cursor:pointer;
+      background:var(--sidebar-hover);
+      color:white;
+    }
+    /* =====================
+   MOBILE RESPONSIVE
+   ===================== */
+/* =====================
+   MOBILE FRIENDLY SPACING
+   ===================== */
+    /* responsive rules moved to themes.css */
+  </style>
+</head>
+
+<body class="theme-redblack">
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h2>StudySync</h2>
+    <ul>
+      <li><a class="nav-link" href="home.html">Dashboard</a></li>
+      <li><a class="nav-link" href="module.html">Modules</a></li>
+      <li><a class="nav-link" href="planner.html">Planner</a></li>
+      <li><a class="nav-link" href="study.html">Study Mode</a></li>
+      <li><a class="nav-link" href="progress.html">Progress & Goals</a></li>
+      <li><a class="nav-link active" href="settings.html">Settings</a></li>
+    </ul>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+    <div class="header">
+      <h1>⚙️ Settings</h1>
+      <select onchange="changeTheme(this.value)">
+        <option value="theme-redblack">Red & Black</option>
+        <option value="theme-light">Light</option>
+        <option value="theme-dark">Dark</option>
+        <option value="theme-neon">Neon</option>
+        <option value="theme-pastel">Pastel</option>
+        <option value="theme-glass">Glass</option>
+      </select>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="card">
+      <h3>Profile</h3>
+      <label>Name</label>
+      <input type="text" placeholder="Your name" />
+
+      <label>Course / Qualification</label>
+      <input type="text" placeholder="e.g. Higher Certificate in IT" />
+
+      <label>Weekly Study Goal (hours)</label>
+      <input type="number" placeholder="e.g. 15" />
+
+      <button>Save Profile</button>
+    </div>
+
+    <!-- APPEARANCE -->
+    <div class="card">
+      <h3>Appearance</h3>
+
+      <label>Theme</label>
+      <select id="themeSelect" onchange="changeTheme(this.value)">
+        <option value="theme-redblack">Red & Black</option>
+        <option value="theme-dark">Dark</option>
+        <option value="theme-light">Light</option>
+        <option value="theme-neon">Neon</option>
+        <option value="theme-pastel">Pastel</option>
+        <option value="theme-glass">Glass</option>
+      </select>
+
+      <label>Font Style</label>
+      <select id="fontSelect" onchange="changeFont(this.value)">
+        <option value="Arial, sans-serif">Arial</option>
+        <option value="'Segoe UI', sans-serif">Segoe UI</option>
+        <option value="'Poppins', sans-serif">Poppins</option>
+        <option value="'Courier New', monospace">Courier New</option>
+        <option value="'Times New Roman', serif">Times New Roman</option>
+      </select>
+    </div>
+
+    <!-- NOTIFICATIONS -->
+    <div class="card">
+      <h3>Notifications</h3>
+      <label><input type="checkbox" checked /> Assignment reminders</label>
+      <label><input type="checkbox" checked /> Test & exam reminders</label>
+      <label><input type="checkbox" /> Daily study reminder</label>
+      <label><input type="checkbox" /> Weekly progress summary</label>
+    </div>
+
+    <!-- DATA -->
+    <div class="card">
+      <h3>Data & Reset</h3>
+      <p style="font-size:14px;opacity:0.85">This will clear all saved data.</p>
+      <button style="background:#b91c1c;">Reset All Data</button>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  function applyPreferences() {
+    const theme = localStorage.getItem('theme') || 'theme-redblack';
+    const font = localStorage.getItem('font') || 'Arial, sans-serif';
+
+    document.body.className = theme;
+    document.body.style.fontFamily = font;
+
+    const themeSelect = document.getElementById('themeSelect');
+    const fontSelect = document.getElementById('fontSelect');
+
+    if (themeSelect) themeSelect.value = theme;
+    if (fontSelect) fontSelect.value = font;
+  }
+
+  function changeTheme(theme) {
+    localStorage.setItem('theme', theme);
+    document.body.className = theme;
+  }
+
+  function changeFont(font) {
+    localStorage.setItem('font', font);
+    document.body.style.fontFamily = font;
+  }
+
+  // Highlight active nav (works with .nav-link and legacy .nav-item)
+  (function () {
+    const current = window.location.pathname.split('/').pop();
+    document.querySelectorAll('.nav-link, .nav-item').forEach(link => {
+      const target = (link.getAttribute('href') || link.dataset.page || '').split('/').pop();
+      link.classList.toggle('active', target === current);
+    });
+  })();
+
+  applyPreferences();
+</script>
+
+</body>
+</html>

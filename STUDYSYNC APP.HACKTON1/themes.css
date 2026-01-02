@@ -1,0 +1,343 @@
+/* ================= BASE ================= */
+body {
+    background: var(--bg);
+    transition: background 0.3s ease;
+}
+
+/* ================= RED & BLACK (DEFAULT) ================= */
+/* 🔥 RED & BLACK GLOW THEME */
+.theme-redblack {
+    --bg: radial-gradient(circle at top, #1a0000, #050000 70%);
+    --sidebar-bg: rgba(15, 0, 0, 0.95);
+    --card-bg: rgba(219, 0, 0, 0.08);
+    --text: #ffffff;
+    --sidebar-item: rgba(255, 23, 23, 0.15);
+    --sidebar-hover: #ff1717;
+
+    background: var(--bg);
+}
+
+/* Sidebar */
+.theme-redblack .sidebar {
+    box-shadow: 0 0 25px rgba(255, 23, 23, 0.15);
+}
+
+/* Cards */
+.theme-redblack .card {
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 23, 23, 0.3);
+    box-shadow: 0 0 20px rgba(255, 23, 23, 0.25);
+}
+
+/* Sidebar items */
+.theme-redblack .sidebar li {
+    transition: 0.3s ease;
+}
+
+.theme-redblack .sidebar li:hover {
+    background: #ff1717;
+    color: #000;
+    box-shadow: 0 0 12px rgba(255, 23, 23, 0.8);
+}
+
+/* Buttons */
+.theme-redblack button {
+    background: linear-gradient(135deg, #ff1717, #b30000);
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 0 12px rgba(255, 23, 23, 0.7);
+    transition: 0.3s ease;
+}
+
+.theme-redblack button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 20px rgba(255, 23, 23, 0.9);
+}
+
+
+/* ================= LIGHT ================= */
+.theme-light {
+    --bg: #f5f7fa; 
+    --sidebar-bg: #ffffff;
+    --card-bg: #ffffff;
+    --text: #111827;
+    --sidebar-item: #e5e7eb;
+    --sidebar-hover: #d1d5db;
+}
+
+/* ================= DARK ================= */
+.theme-dark {
+    --bg: #0f172a;
+    --sidebar-bg: #020617;
+    --card-bg: #020617;
+    --text: #e5e7eb;
+    --sidebar-item: #1e293b;
+    --sidebar-hover: #334155;
+}
+
+/* ================= NEON ================= */
+.theme-neon {
+    --bg: #050505;
+    --sidebar-bg: #0a0a0a;
+    --card-bg: #0f0f0f;
+    --text: #39ff14;
+    --sidebar-item: #111111;
+    --sidebar-hover: #0b0b0b;
+}
+
+/* ================= PASTEL ================= */
+.theme-pastel {
+    --bg: #fdf2f8;
+    --sidebar-bg: #fae8ff;
+    --card-bg: #ffffff;
+    --text: #4b5563;
+    --sidebar-item: #f5d0fe;
+    --sidebar-hover: #f0abfc;
+}
+
+/* ================= GLASS (PRETTY) ================= */
+.theme-glass {
+    --bg: linear-gradient(135deg, #c7d2fe, #fbcfe8, #bfdbfe);
+    --sidebar-bg: rgba(255, 255, 255, 0.25);
+    --card-bg: rgba(255, 255, 255, 0.35);
+    --text: #0f172a;
+    --sidebar-item: rgba(255, 255, 255, 0.4);
+    --sidebar-hover: rgba(255, 255, 255, 0.6);
+}
+
+/* Glass background */
+body.theme-glass {
+    background: var(--bg);
+}
+
+/* Glass blur effect */
+body.theme-glass .sidebar,
+body.theme-glass .card {
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+/* Glass buttons */
+body.theme-glass button {
+    background: linear-gradient(135deg, #60a5fa, #a78bfa);
+    color: #ffffff;
+}
+
+body.theme-glass button:hover {
+    opacity: 0.9;
+}
+
+
+/* ========== LAYOUT & RESPONSIVE (shared across pages) ========== */
+
+/* Base layout helpers */
+.app {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        min-height: 100vh;
+}
+
+.main {
+        padding: 24px;
+}
+
+.grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+}
+
+/* Week / calendar helper (pages may also define specifics) */
+.week-grid,
+.calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 8px;
+}
+
+/* Shared mobile rules - keeps consistent behavior across pages */
+@media (max-width: 768px) {
+
+    /* App collapses to single column */
+    .app {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Sidebar becomes a horizontal top nav */
+    .sidebar {
+        width: 100% !important;
+        padding: 12px !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        overflow-x: auto !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 100 !important;
+    }
+
+    .sidebar h2,
+    .logo {
+        display: none;
+    }
+
+    .sidebar ul,
+    .sidebar nav {
+        display: flex !important;
+        gap: 12px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        list-style: none !important;
+    }
+
+    .nav-link,
+    .nav-item {
+        white-space: nowrap !important;
+        font-size: 14px !important;
+        padding: 10px 14px !important;
+        border-radius: 14px !important;
+    }
+
+    /* Main content spacing */
+    .main {
+        padding: 16px !important;
+    }
+
+    /* Stack primary grids */
+    .grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Planner-specific layout collapse */
+    .planner-layout {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Inputs and controls are touch friendly */
+    input,
+    select,
+    button {
+        width: 100% !important;
+        padding: 12px !important;
+        font-size: 15px !important;
+    }
+
+    /* Ensure .time-row stacks on mobile (add-event) */
+    .time-row {
+        grid-template-columns: 1fr !important;
+        display: grid !important;
+        gap: 8px !important;
+    }
+
+    /* Make week layouts scroll horizontally on narrow screens; keep full calendars as 7-column grids */
+    .week-grid {
+        grid-auto-flow: column !important;
+        grid-auto-columns: minmax(140px, 1fr) !important;
+        gap: 10px !important;
+        overflow-x: auto !important;
+        padding-bottom: 8px !important;
+    }
+
+    /* Mobile: keep calendar as a 7-column grid so it renders like a real calendar */
+    .calendar-grid {
+        display: grid !important;
+        grid-template-columns: repeat(7, minmax(40px, 1fr)) !important;
+        gap: 6px !important;
+        overflow: visible !important;
+    }
+
+    .calendar-day {
+        min-height: 80px !important;
+        padding: 8px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-start !important;
+        align-items: flex-start !important;
+        font-size: 13px !important;
+        background: var(--sidebar-item) !important;
+        border-radius: 8px !important;
+    }
+
+    .day-name {
+        text-align: center !important;
+        font-size: 12px !important;
+        opacity: 0.9 !important;
+        padding: 6px 0 !important;
+    }
+
+    /* Force sidebar to occupy the top row and display links horizontally */
+    .sidebar {
+        grid-column: 1 / -1 !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 8px !important;
+        padding: 8px 12px !important;
+        background: var(--sidebar-bg) !important;
+    }
+
+    .sidebar ul,
+    .sidebar nav {
+        display: flex !important;
+        gap: 8px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        list-style: none !important;
+        align-items: center !important;
+        flex-wrap: nowrap !important;
+    }
+
+    .sidebar a,
+    .sidebar .nav-item,
+    .sidebar .nav-link {
+        display: inline-flex !important;
+        align-items: center !important;
+        padding: 8px 12px !important;
+        margin: 0 !important;
+        white-space: nowrap !important;
+        border-radius: 12px !important;
+        background: transparent !important;
+        color: var(--text) !important;
+        text-decoration: none !important;
+        flex-shrink: 0 !important;
+    }
+
+    /* Ensure top nav can scroll horizontally when there are many items */
+    .sidebar {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    /* show subtle divider under top nav */
+    .sidebar {
+        box-shadow: 0 2px 12px rgba(0,0,0,0.12) !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 120 !important;
+    }
+
+}
+
+.assess-badge {
+    background: var(--accent, #007bff);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    margin-right: 4px;
+}
+
+.assess-btn {
+    margin-right: 4px;
+    padding: 4px 8px;
+    border: 1px solid #ccc;
+    background: #f9f9f9;
+    cursor: pointer;
+}
+
+.assess-btn.active {
+    background: var(--sidebar-hover);
+    color: white;
+}
+

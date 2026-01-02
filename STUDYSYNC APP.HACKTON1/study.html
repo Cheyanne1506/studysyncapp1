@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>StudySync AI – Study Mode</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="themes.css">
+
+<style>
+*{box-sizing:border-box;font-family:Arial}
+body{margin:0;background:var(--bg);color:var(--text)}
+.app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{
+  background:var(--sidebar-bg);
+  padding:20px
+}
+.sidebar h2{margin-bottom:20px}
+.sidebar ul{list-style:none;padding:0}
+.nav-link{
+  display:block;padding:12px;border-radius:8px;
+  margin-bottom:8px;text-decoration:none;
+  background:var(--sidebar-item);color:var(--text)
+}
+.nav-link:hover{background:var(--sidebar-hover)}
+.nav-link.active{
+  background:var(--sidebar-hover);
+  box-shadow:0 0 10px rgba(255,0,0,.4)
+}
+
+/* MAIN */
+.main{padding:24px}
+.card{
+  background:var(--card-bg);
+  border-radius:16px;
+  padding:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,.25);
+  margin-bottom:20px
+}
+
+textarea,input{
+  width:100%;padding:10px;
+  border-radius:10px;border:none;margin-bottom:10px
+}
+
+button{
+  padding:10px 16px;border-radius:10px;border:none;
+  cursor:pointer;background:var(--sidebar-hover);color:white
+}
+
+.topic{
+  padding:10px;border-radius:10px;
+  background:var(--sidebar-item);
+  margin-bottom:6px;cursor:pointer
+}
+
+.timer{font-size:36px;text-align:center;margin:10px 0}
+.question{
+  margin-bottom:8px;padding:10px;
+  border-radius:10px;
+  background:rgba(255,255,255,.05)
+}
+.error{color:#ff3b30;font-size:14px}
+</style>
+</head>
+
+<body class="theme-redblack">
+
+<div class="app">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h2>StudySync</h2>
+  <ul>
+    <li><a class="nav-link" href="home.html">Dashboard</a></li>
+    <li><a class="nav-link" href="module.html">Modules</a></li>
+    <li><a class="nav-link" href="planner.html">Planner</a></li>
+    <li><a class="nav-link active" href="study.html">Study Mode</a></li>
+    <li><a class="nav-link" href="progress.html">Progress & Goals</a></li>
+    <li><a class="nav-link" href="settings.html">Settings</a></li>
+  </ul>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<div class="card">
+ <input type="file" id="pdfInput" accept=".pdf">
+<input id="topicsInput" placeholder="Enter topics (comma separated)">
+<button onclick="generateFromPDF()">Generate Notes & Tests</button>
+
+<div id="aiOutput"></div>
+</div>
+
+<div class="card">
+  <h3>📚 Study Topics</h3>
+  <div id="topics"></div>
+</div>
+
+<div class="card">
+  <h3>📝 Notes</h3>
+  <div id="notes">Select a topic</div>
+</div>
+
+<div class="card">
+  <h3>🧪 Self-Test</h3>
+  <div id="tests">Select a topic</div>
+</div>
+
+<div class="card">
+  <h3>⏱ Focus Timer</h3>
+  <div class="timer" id="timer">25:00</div>
+  <button onclick="startTimer()">Start</button>
+</div>
+
+</div>
+</div>
+
+<script>
+/* ================================
+   GEMINI AI STUDY ENGINE
+================================ */
+
+const GEMINI_ENDPOINT = "http://localhost:3000/api/generate-from-pdf";
+
+/* ================================
+   PDF → AI GENERATION
+================================ */
+async function generateFromPDF() {
+  const pdfInput = document.getElementById("pdfInput");
+  const topicsInput = document.getElementById("topicsInput");
+  const output = document.getElementById("aiOutput");
+
+  if (!pdfInput || !pdfInput.files[0]) {
+    alert("Please upload a PDF textbook");
+    return;
+  }
+
+  const topics = topicsInput.value
+    .split(",")
+    .map(t => t.trim())
+    .filter(Boolean);
+
+  if (topics.length === 0) {
+    alert("Please enter study topics");
+    return;
+  }
+
+  output.innerHTML = "⏳ Generating study content...";
+
+  const formData = new FormData();
+  formData.append("pdf", pdfInput.files[0]);
+  formData.append("topics", JSON.stringify(topics));
+
+  try {
+    const res = await fetch(GEMINI_ENDPOINT, {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await res.json();
+
+    if (!data.success) {
+      output.innerHTML = "❌ AI generation failed";
+      return;
+    }
+
+    renderAIResults(data.data);
+
+  } catch (err) {
+    console.error(err);
+    output.innerHTML = "❌ AI error – try a smaller PDF";
+  }
+}
+
+/* ================================
+   RENDER AI OUTPUT
+================================ */
+function renderAIResults(results) {
+  const output = document.getElementById("aiOutput");
+  output.innerHTML = "";
+
+  results.forEach(section => {
+    const card = document.createElement("div");
+    card.className = "session";
+
+    card.innerHTML = `
+      <h4>📘 ${section.topic}</h4>
+      <pre style="white-space:pre-wrap">${section.content}</pre>
+    `;
+
+    output.appendChild(card);
+  });
+}
+
+/* ================================
+   AUTO SAVE STUDY SESSIONS
+================================ */
+function saveGeneratedTopics(results) {
+  let sessions = JSON.parse(localStorage.getItem("studySessions") || "[]");
+
+  const today = new Date();
+
+  results.forEach((r, i) => {
+    const date = new Date(today);
+    date.setDate(today.getDate() + i);
+
+    sessions.push({
+      date: date.toISOString().slice(0, 10),
+      moduleCode: "AI",
+      topic: r.topic,
+      assessment: "Study",
+      duration: 45
+    });
+  });
+
+  localStorage.setItem("studySessions", JSON.stringify(sessions));
+}
+
+/* ================================
+   FOCUS TIMER
+================================ */
+let timerInterval;
+let remainingSeconds = 1500;
+
+function startFocusTimer(minutes = 25) {
+  clearInterval(timerInterval);
+  remainingSeconds = minutes * 60;
+
+  timerInterval = setInterval(() => {
+    remainingSeconds--;
+    updateTimerDisplay();
+
+    if (remainingSeconds <= 0) {
+      clearInterval(timerInterval);
+      alert("🎉 Focus session complete!");
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const timer = document.querySelector(".timer");
+  if (!timer) return;
+
+  const mins = Math.floor(remainingSeconds / 60);
+  const secs = remainingSeconds % 60;
+  timer.textContent = `${mins}:${secs.toString().padStart(2, "0")}`;
+}
+
+/* ================================
+   AI STUDY ASSISTANT (CHAT)
+================================ */
+async function askStudyAssistant(question) {
+  const res = await fetch("http://localhost:3000/api/ai-chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ question })
+  });
+
+  const data = await res.json();
+  alert(data.answer);
+}
+ (function applyPreferences() {
+    const theme = localStorage.getItem('theme') || 'theme-redblack';
+    const font = localStorage.getItem('font') || 'Arial, sans-serif';
+
+    document.body.className = theme;
+    document.body.style.fontFamily = font;
+  })();
+  fetch("http://localhost:3000/api/generate-from-pdf", {
+  method: "POST",
+  body: formData
+});
+
+</script>
+</body>
+</html>
